@@ -1,0 +1,203 @@
+{
+    "$schema": "https://raw.githubusercontent.com/rogerwesterbo/k8sdockside/main/docs/plugin.schema.json",
+    "id": "kubeovn",
+    "name": "Kube-OVN",
+    "version": "1.0.0",
+    "minAppVersion": "0.0.27",
+    "tagline": "VPCs, subnets and IPAM on OVN",
+    "icon": "layers",
+    "docs": "https://kubeovn.github.io/docs/stable/en/",
+    "author": "Roger Westerbo",
+    "links": [
+        { "label": "kubeovn.io", "url": "https://kubeovn.github.io/docs/stable/en/" },
+        { "label": "Subnets", "url": "https://kubeovn.github.io/docs/stable/en/guide/subnet/" },
+        { "label": "VPCs", "url": "https://kubeovn.github.io/docs/stable/en/guide/vpc/" },
+        { "label": "GitHub", "url": "https://github.com/kubeovn/kube-ovn" },
+        { "label": "Plugin source", "url": "https://github.com/rogerwesterbo/k8sdockside-kubeovn" }
+    ],
+    "description": "Kube-OVN puts OVN under Kubernetes: a VPC is a logical router, a subnet is a logical switch with its own IPAM, and every pod address is a real object you can look up. That is a different shape from a CNI that hands out a slice per node, and this plugin draws it that way.\n\nStart with Subnets & IPAM: every subnet with what it has handed out against what it has left, read from the status Kube-OVN keeps rather than counted by hand, and the addresses in it listed by the pod and node holding each one. Dual-stack subnets show both families side by side. VPC topology draws each router with the subnets hanging off it and the namespaces bound to them, so a pod in the wrong VPC is visible rather than deduced.\n\nThe overview checks the pieces Kube-OVN needs — ovn-central, the controller, and ovs-ovn and kube-ovn-cni on every node — and says which are not serving, because a control plane that looks healthy while ovs-ovn crash-loops is the failure people lose time to. Pods, Nodes and Subnets each get a panel; every Kube-OVN kind gets a table.",
+    "requires": [
+        { "kind": "crd:subnets.kubeovn.io", "label": "Subnets" },
+        { "kind": "crd:vpcs.kubeovn.io", "label": "VPCs" },
+        { "kind": "crd:ips.kubeovn.io", "label": "IP addresses" },
+        { "kind": "crd:ippools.kubeovn.io", "label": "IP pools", "optional": true },
+        { "kind": "crd:vlans.kubeovn.io", "label": "VLANs", "optional": true },
+        { "kind": "crd:provider-networks.kubeovn.io", "label": "Provider networks", "optional": true },
+        { "kind": "crd:security-groups.kubeovn.io", "label": "Security groups", "optional": true },
+        { "kind": "crd:vips.kubeovn.io", "label": "Virtual IPs", "optional": true },
+        { "kind": "crd:vpc-nat-gateways.kubeovn.io", "label": "VPC NAT gateways", "optional": true },
+        { "kind": "crd:vpc-dnses.kubeovn.io", "label": "VPC DNS", "optional": true },
+        { "kind": "crd:vpc-egress-gateways.kubeovn.io", "label": "VPC egress gateways", "optional": true },
+        { "kind": "crd:switch-lb-rules.kubeovn.io", "label": "Switch load balancer rules", "optional": true },
+        { "kind": "crd:qos-policies.kubeovn.io", "label": "QoS policies", "optional": true },
+        { "kind": "crd:ovn-eips.kubeovn.io", "label": "OVN EIPs", "optional": true },
+        { "kind": "crd:ovn-fips.kubeovn.io", "label": "OVN FIPs", "optional": true },
+        { "kind": "crd:ovn-snat-rules.kubeovn.io", "label": "OVN SNAT rules", "optional": true },
+        { "kind": "crd:ovn-dnat-rules.kubeovn.io", "label": "OVN DNAT rules", "optional": true },
+        { "kind": "crd:iptables-eips.kubeovn.io", "label": "iptables EIPs", "optional": true },
+        { "kind": "crd:iptables-fip-rules.kubeovn.io", "label": "iptables FIP rules", "optional": true },
+        { "kind": "crd:iptables-snat-rules.kubeovn.io", "label": "iptables SNAT rules", "optional": true },
+        { "kind": "crd:iptables-dnat-rules.kubeovn.io", "label": "iptables DNAT rules", "optional": true },
+        { "kind": "crd:bgp-confs.kubeovn.io", "label": "BGP configuration", "optional": true },
+        { "kind": "crd:evpn-confs.kubeovn.io", "label": "EVPN configuration", "optional": true },
+        { "kind": "crd:dnsnameresolvers.kubeovn.io", "label": "DNS name resolvers", "optional": true }
+    ],
+    "ui": {
+        "kinds": [
+            "crd:subnets.kubeovn.io",
+            "crd:vpcs.kubeovn.io",
+            "crd:ips.kubeovn.io",
+            "crd:ippools.kubeovn.io",
+            "crd:vlans.kubeovn.io",
+            "crd:provider-networks.kubeovn.io",
+            "crd:vpc-nat-gateways.kubeovn.io",
+            "pods",
+            "nodes",
+            "namespaces",
+            "daemonsets",
+            "deployments",
+            "events"
+        ],
+        "write": false
+    },
+    "overview": { "entry": "overview.html" },
+    "views": [
+        { "id": "ipam", "label": "Subnets & IPAM", "icon": "layers", "type": "custom", "entry": "index.html" },
+        { "id": "topology", "label": "VPC topology", "icon": "share", "type": "custom", "entry": "topology.html" },
+
+        { "id": "vpcs", "label": "VPCs", "icon": "globe", "kind": "crd:vpcs.kubeovn.io" },
+        { "id": "subnets", "label": "Subnets", "icon": "database", "kind": "crd:subnets.kubeovn.io" },
+        { "id": "ips", "label": "IP addresses", "icon": "columns", "kind": "crd:ips.kubeovn.io" },
+        { "id": "ippools", "label": "IP pools", "icon": "copies", "kind": "crd:ippools.kubeovn.io" },
+        { "id": "vips", "label": "Virtual IPs", "icon": "link", "kind": "crd:vips.kubeovn.io" },
+
+        { "id": "vlans", "label": "VLANs", "icon": "rows", "kind": "crd:vlans.kubeovn.io" },
+        { "id": "provider-networks", "label": "Provider networks", "icon": "route", "kind": "crd:provider-networks.kubeovn.io" },
+
+        { "id": "security-groups", "label": "Security groups", "icon": "shield", "kind": "crd:security-groups.kubeovn.io" },
+        { "id": "qos-policies", "label": "QoS policies", "icon": "gauge", "kind": "crd:qos-policies.kubeovn.io" },
+        { "id": "switch-lb-rules", "label": "Switch LB rules", "icon": "scale", "kind": "crd:switch-lb-rules.kubeovn.io" },
+
+        { "id": "vpc-nat-gateways", "label": "VPC NAT gateways", "icon": "gateway", "kind": "crd:vpc-nat-gateways.kubeovn.io" },
+        { "id": "vpc-egress-gateways", "label": "VPC egress gateways", "icon": "exit", "kind": "crd:vpc-egress-gateways.kubeovn.io" },
+        { "id": "vpc-dnses", "label": "VPC DNS", "icon": "book", "kind": "crd:vpc-dnses.kubeovn.io" },
+
+        { "id": "ovn-eips", "label": "OVN EIPs", "icon": "grant", "kind": "crd:ovn-eips.kubeovn.io" },
+        { "id": "ovn-fips", "label": "OVN FIPs", "icon": "forward", "kind": "crd:ovn-fips.kubeovn.io" },
+        { "id": "ovn-snat-rules", "label": "OVN SNAT rules", "icon": "sliders", "kind": "crd:ovn-snat-rules.kubeovn.io" },
+        { "id": "ovn-dnat-rules", "label": "OVN DNAT rules", "icon": "sliders", "kind": "crd:ovn-dnat-rules.kubeovn.io" },
+
+        { "id": "iptables-eips", "label": "iptables EIPs", "icon": "grant", "kind": "crd:iptables-eips.kubeovn.io" },
+        { "id": "iptables-fip-rules", "label": "iptables FIP rules", "icon": "forward", "kind": "crd:iptables-fip-rules.kubeovn.io" },
+        { "id": "iptables-snat-rules", "label": "iptables SNAT rules", "icon": "sliders", "kind": "crd:iptables-snat-rules.kubeovn.io" },
+        { "id": "iptables-dnat-rules", "label": "iptables DNAT rules", "icon": "sliders", "kind": "crd:iptables-dnat-rules.kubeovn.io" },
+
+        { "id": "bgp-confs", "label": "BGP configuration", "icon": "settings", "kind": "crd:bgp-confs.kubeovn.io" },
+        { "id": "evpn-confs", "label": "EVPN configuration", "icon": "settings", "kind": "crd:evpn-confs.kubeovn.io" },
+        { "id": "dnsnameresolvers", "label": "DNS name resolvers", "icon": "search", "kind": "crd:dnsnameresolvers.kubeovn.io" },
+
+        { "id": "ovn-central", "label": "ovn-central pods", "icon": "server", "kind": "pods", "selector": "app=ovn-central" },
+        { "id": "controller-pods", "label": "kube-ovn-controller pods", "icon": "repeat", "kind": "pods", "selector": "app=kube-ovn-controller" },
+        { "id": "cni-pods", "label": "kube-ovn-cni pods", "icon": "puzzle", "kind": "pods", "selector": "app=kube-ovn-cni" },
+        { "id": "ovs-pods", "label": "ovs-ovn pods", "icon": "chip", "kind": "pods", "selector": "app=ovs" },
+        { "id": "pinger-pods", "label": "kube-ovn-pinger pods", "icon": "bell", "kind": "pods", "selector": "app=kube-ovn-pinger" }
+    ],
+    "cards": [
+        { "label": "VPCs", "kind": "crd:vpcs.kubeovn.io" },
+        { "label": "Subnets", "kind": "crd:subnets.kubeovn.io" },
+        { "label": "IP addresses", "kind": "crd:ips.kubeovn.io" },
+        {
+            "label": "ovs-ovn pods",
+            "kind": "pods",
+            "selector": "app=ovs",
+            "groupBy": "status.phase",
+            "tones": { "Running": "ok", "Pending": "warn", "Failed": "error", "Unknown": "warn" }
+        },
+        {
+            "label": "kube-ovn-cni pods",
+            "kind": "pods",
+            "selector": "app=kube-ovn-cni",
+            "groupBy": "status.phase",
+            "tones": { "Running": "ok", "Pending": "warn", "Failed": "error", "Unknown": "warn" }
+        }
+    ],
+    "charts": [
+        {
+            "id": "subnet-used",
+            "label": "Addresses in use",
+            "attach": "overview",
+            "unit": "count",
+            "legend": "subnet_name",
+            "description": "Addresses Kube-OVN has handed out per subnet, from kube-ovn-controller's metrics (port 10660).",
+            "query": "sum by (subnet_name) (subnet_used_ip_count)"
+        },
+        {
+            "id": "subnet-available",
+            "label": "Addresses available",
+            "attach": "overview",
+            "unit": "count",
+            "legend": "subnet_name",
+            "description": "Addresses each subnet has left, from kube-ovn-controller's metrics (port 10660).",
+            "query": "sum by (subnet_name) (subnet_available_ip_count)"
+        },
+        {
+            "id": "pod-ping-latency",
+            "label": "Pod-to-pod latency",
+            "attach": "overview",
+            "unit": "seconds",
+            "legend": "src_node_name",
+            "description": "Round trip between pinger pods, per source node. Kube-OVN reports this in milliseconds; the query converts it to seconds. Needs kube-ovn-pinger running and scraped (port 8080).",
+            "query": "avg by (src_node_name) (pinger_pod_ping_latency_ms) / 1000"
+        },
+        {
+            "id": "pod-ping-lost",
+            "label": "Pod-to-pod packets lost",
+            "attach": "overview",
+            "unit": "count",
+            "legend": "src_node_name",
+            "description": "Pings between pinger pods that got no answer, per source node. Anything above zero is the overlay dropping traffic.",
+            "query": "sum by (src_node_name) (pinger_pod_ping_lost_total)"
+        },
+        {
+            "id": "apiserver-latency",
+            "label": "API server latency from the pods",
+            "attach": "overview",
+            "unit": "seconds",
+            "legend": "nodeName",
+            "description": "How long the API server takes to answer from inside the pod network, as kube-ovn-pinger sees it. Reported in milliseconds; the query converts it to seconds.",
+            "query": "avg by (nodeName) (pinger_apiserver_latency_ms) / 1000"
+        },
+        {
+            "id": "this-subnet-used",
+            "label": "Addresses in use",
+            "attach": "crd:subnets.kubeovn.io",
+            "unit": "count",
+            "legend": "subnet_name",
+            "description": "This subnet's addresses in use over time, from kube-ovn-controller.",
+            "query": "sum by (subnet_name) (subnet_used_ip_count{subnet_name=\"$name\"})"
+        },
+        {
+            "id": "this-subnet-available",
+            "label": "Addresses available",
+            "attach": "crd:subnets.kubeovn.io",
+            "unit": "count",
+            "legend": "subnet_name",
+            "description": "What this subnet has left over time, from kube-ovn-controller.",
+            "query": "sum by (subnet_name) (subnet_available_ip_count{subnet_name=\"$name\"})"
+        },
+        {
+            "id": "node-ping-latency",
+            "label": "Pod-to-pod latency from this node",
+            "attach": "nodes",
+            "unit": "seconds",
+            "legend": "target_node_name",
+            "description": "Round trip from this node's pinger pod to each other node, converted from milliseconds. Needs kube-ovn-pinger running and scraped.",
+            "query": "avg by (target_node_name) (pinger_pod_ping_latency_ms{src_node_name=\"$node\"}) / 1000"
+        }
+    ],
+    "sections": [
+        { "id": "pod", "label": "Kube-OVN", "kind": "pods", "entry": "pod.html", "height": 260 },
+        { "id": "subnet", "label": "Addresses", "kind": "crd:subnets.kubeovn.io", "entry": "subnet.html", "height": 340 },
+        { "id": "node", "label": "Kube-OVN", "kind": "nodes", "entry": "node.html", "height": 230 }
+    ]
+}
