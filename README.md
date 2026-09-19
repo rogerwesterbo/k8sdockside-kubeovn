@@ -1,6 +1,6 @@
 # Kube-OVN for K8s Dockside
 
-A plugin for the [K8s Dockside](https://github.com/rogerwesterbo/k8sdockside)
+A plugin for the [K8s Dockside](https://github.com/k8sdockside/k8sdockside)
 desktop app that shows [Kube-OVN](https://github.com/kubeovn/kube-ovn) as the
 shape it actually has: VPCs are logical routers, subnets are logical switches
 with their own IPAM, and every pod address is an object you can look up. Plain
@@ -47,7 +47,7 @@ none claiming it.
 **Settings → Plugins → From a repository** with:
 
 ```
-https://github.com/rogerwesterbo/k8sdockside-kubeovn.git
+https://github.com/k8sdockside/kubeovn.git
 ```
 
 ## What it reads, and what it changes
@@ -83,7 +83,7 @@ and scraped.
 
 ```sh
 # what CI runs: loads the plugin exactly as the app does
-go run github.com/rogerwesterbo/k8sdockside/cmd/plugincheck@main .
+go run github.com/k8sdockside/k8sdockside/cmd/plugincheck@main .
 ```
 
 The pages are plain classic scripts — no build, no bundler, nothing generated.

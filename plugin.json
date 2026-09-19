@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/rogerwesterbo/k8sdockside/main/docs/plugin.schema.json",
+    "$schema": "https://raw.githubusercontent.com/k8sdockside/k8sdockside/main/docs/plugin.schema.json",
     "id": "kubeovn",
     "name": "Kube-OVN",
     "version": "1.0.0",
@@ -7,13 +7,13 @@
     "tagline": "VPCs, subnets and IPAM on OVN",
     "icon": "layers",
     "docs": "https://kubeovn.github.io/docs/stable/en/",
-    "author": "Roger Westerbo",
+    "author": "K8s Dockside",
     "links": [
         { "label": "kubeovn.io", "url": "https://kubeovn.github.io/docs/stable/en/" },
         { "label": "Subnets", "url": "https://kubeovn.github.io/docs/stable/en/guide/subnet/" },
         { "label": "VPCs", "url": "https://kubeovn.github.io/docs/stable/en/guide/vpc/" },
         { "label": "GitHub", "url": "https://github.com/kubeovn/kube-ovn" },
-        { "label": "Plugin source", "url": "https://github.com/rogerwesterbo/k8sdockside-kubeovn" }
+        { "label": "Plugin source", "url": "https://github.com/k8sdockside/kubeovn" }
     ],
     "description": "Kube-OVN puts OVN under Kubernetes: a VPC is a logical router, a subnet is a logical switch with its own IPAM, and every pod address is a real object you can look up. That is a different shape from a CNI that hands out a slice per node, and this plugin draws it that way.\n\nStart with Subnets & IPAM: every subnet with what it has handed out against what it has left, read from the status Kube-OVN keeps rather than counted by hand, and the addresses in it listed by the pod and node holding each one. Dual-stack subnets show both families side by side. VPC topology draws each router with the subnets hanging off it and the namespaces bound to them, so a pod in the wrong VPC is visible rather than deduced.\n\nThe overview checks the pieces Kube-OVN needs — ovn-central, the controller, and ovs-ovn and kube-ovn-cni on every node — and says which are not serving, because a control plane that looks healthy while ovs-ovn crash-loops is the failure people lose time to. Pods, Nodes and Subnets each get a panel; every Kube-OVN kind gets a table.",
     "requires": [
